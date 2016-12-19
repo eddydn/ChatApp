@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView
+    <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
         android:layout_alignParentStart="true"
         android:layout_marginTop="5dp"
         android:layout_below="@id/message_user"
