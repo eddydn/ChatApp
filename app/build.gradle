@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 26
+    buildToolsVersion '26.0.0'
     defaultConfig {
         applicationId "dev.edmt.chatapp"
         minSdkVersion 22
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -31,5 +31,6 @@ dependencies {
     compile 'com.android.support:design:25.0.1'
     compile 'com.firebaseui:firebase-ui:0.6.2'
     compile 'com.github.hani-momanii:SuperNova-Emoji:1.0'
+    compile 'com.github.lguipeng:BubbleView:1.0.1'
 }
 apply plugin: 'com.google.gms.google-services'

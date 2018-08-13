@@ -18,6 +18,7 @@ import android.text.format.DateFormat;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseListAdapter;
+import com.github.library.bubbleview.BubbleTextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //Get references to the views of list_item.xml
                     TextView messageText, messageUser, messageTime;
-                    messageText = (EmojiconTextView) v.findViewById(R.id.message_text);
+                    messageText = (BubbleTextView) v.findViewById(R.id.message_text);
                     messageUser = (TextView) v.findViewById(R.id.message_user);
                     messageTime = (TextView) v.findViewById(R.id.message_time);
 
