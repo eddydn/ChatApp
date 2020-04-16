@@ -3,12 +3,19 @@ package dev.edmt.chatapp;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -22,6 +29,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
@@ -29,7 +37,7 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 public class MainActivity extends AppCompatActivity {
 
     private static int SIGN_IN_REQUEST_CODE = 1;
-    private FirebaseListAdapter<ChatMessage> adapter;
+    private FirebaseRecyclerAdapter<ChatMessage,ChatViewHolder> adapter;
     RelativeLayout activity_main;
 
     //Add Emojicon
@@ -37,7 +45,9 @@ public class MainActivity extends AppCompatActivity {
     ImageView emojiButton,submitButton;
     EmojIconActions emojIconActions;
 
-
+    RecyclerView listOfMessage;
+    Query query;
+    FirebaseRecyclerOptions<ChatMessage> options;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_sign_out)
@@ -82,7 +92,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         activity_main = (RelativeLayout)findViewById(R.id.activity_main);
+         listOfMessage = (RecyclerView) findViewById(R.id.list_of_message);
+         listOfMessage.setLayoutManager(new LinearLayoutManager(this));
 
+         query = FirebaseDatabase.getInstance().getReference();
+         options = new FirebaseRecyclerOptions.Builder<ChatMessage>()
+                 .setQuery(query,ChatMessage.class)
+                 .build();
         //Add Emoji
         emojiButton = (ImageView)findViewById(R.id.emoji_button);
         submitButton = (ImageView)findViewById(R.id.submit_button);
@@ -119,24 +135,36 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayChatMessage() {
 
-        ListView listOfMessage = (ListView)findViewById(R.id.list_of_message);
-        adapter = new FirebaseListAdapter<ChatMessage>(this,ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference())
-        {
+
+        adapter = new FirebaseRecyclerAdapter<ChatMessage, ChatViewHolder>(options) {
             @Override
-            protected void populateView(View v, ChatMessage model, int position) {
-
-                    //Get references to the views of list_item.xml
-                    TextView messageText, messageUser, messageTime;
-                    messageText = (BubbleTextView) v.findViewById(R.id.message_text);
-                    messageUser = (TextView) v.findViewById(R.id.message_user);
-                    messageTime = (TextView) v.findViewById(R.id.message_time);
-
-                    messageText.setText(model.getMessageText());
-                    messageUser.setText(model.getMessageUser());
-                    messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", model.getMessageTime()));
+            protected void onBindViewHolder(@NonNull ChatViewHolder holder, int position, @NonNull ChatMessage model) {
+                holder.messageText.setText(model.getMessageText());
+                holder.messageUser.setText(model.getMessageUser());
+                holder.messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", model.getMessageTime()));
 
             }
+
+            @NonNull
+            @Override
+            public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+                return new ChatViewHolder(LayoutInflater.from(MainActivity.this)
+                .inflate(R.layout.list_item,viewGroup,false));
+            }
         };
+
+
         listOfMessage.setAdapter(adapter);
+    }
+
+    private class ChatViewHolder extends RecyclerView.ViewHolder {
+        TextView messageText, messageUser, messageTime;
+
+        public ChatViewHolder(@NonNull View itemView) {
+            super(itemView);
+            messageText = (BubbleTextView) itemView.findViewById(R.id.message_text);
+            messageUser = (TextView) itemView.findViewById(R.id.message_user);
+            messageTime = (TextView) itemView.findViewById(R.id.message_time);
+        }
     }
 }
